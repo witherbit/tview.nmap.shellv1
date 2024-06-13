@@ -82,7 +82,7 @@ namespace NMap.Scanner
             var NmapContext = GetContext();
             NmapContext.Options.AddAll(new[]
                 {
-                    //NmapFlag.ServiceVersion,
+                    NmapFlag.ServiceVersion,
                     NmapFlag.OsDetection
                 });
             if (ScanType != ScanType.Default)

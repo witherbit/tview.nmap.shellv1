@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using tview.nmap.shellv1.Enums;
+using tview.nmap.shellv1.Nmap;
 using tview.nmap.shellv1.Scripts;
 
 namespace tview.nmap.shellv1
@@ -42,13 +43,13 @@ namespace tview.nmap.shellv1
         {
             var _tcpPortScanner = new Scanner(_exePath, new Target(), TcpEV);
             _tcpPortScanner.Options.Add(NmapFlag.Verbose);
-            _tcpPortScanner.Options.Add(NmapFlag.PortSpecification, "1-9099,9101-65535");
+            _tcpPortScanner.Options.Add(NmapFlag.PortSpecification, PortConsts.AllTopPorts.PortFormat()/*"1-1000"*//*"1-9099,9101-65535"*/);
             _tcpPortScanner.Options.Add(NmapFlag.MinProbeParallelization, "1024");
             _tcpPortScanner.Options.Add(NmapFlag.ParallelMinHostGroupSize, "1024");
             _tcpPortScanner.Options.Add(NmapFlag.IcmpEchoDiscovery);
             _tcpPortScanner.Options.Add(NmapFlag.AggressiveTiming);
             _tcpPortScanner.Target = new Target(targets);
-            await _tcpPortScanner.PortScanAsync(ScanType.Syn);
+            await _tcpPortScanner.PortScanAsync();
         }
 
         public async Task DiscoverHostsAsync(string target)
@@ -80,6 +81,12 @@ namespace tview.nmap.shellv1
                 mask = mask >> 1;
             }
             return subnetConsecutiveOnes;
+        }
+
+        public bool CheckAcceptedIp(string target)
+        {
+            var spt = HostsSelected.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+            return spt.Contains(target);
         }
 
         public void Close(ContextEV ev)

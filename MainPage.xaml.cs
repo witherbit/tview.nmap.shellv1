@@ -21,6 +21,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using tview.nmap.shellv1.Controls;
+using tview.nmap.shellv1.Objects;
 using wcheck.Pages;
 using wcheck.Utils;
 using wcheck.wcontrols;
@@ -154,7 +155,7 @@ namespace tview.nmap.shellv1
             foreach (Host host in hosts)
                 if (Processor.CheckSelectedOnly)
                 {
-                    if(Processor.HostsSelected.Contains(host.Address.IP))
+                    if(Processor.CheckAcceptedIp(host.Address.IP))
                         hostsTargets.Add(host.Address.IP);
                 }
                 else
@@ -164,7 +165,6 @@ namespace tview.nmap.shellv1
                     
             Processor.ScanTcpPortsAsync(hostsTargets);
         }
-
         private void ShowResults()
         {
             this.Invoke(() =>
@@ -172,7 +172,10 @@ namespace tview.nmap.shellv1
                 uiCircleScan.Fill = _inComplete;
                 uiGridCaption.Visibility = Visibility.Collapsed;
                 uiStackPanel.Visibility = Visibility.Visible;
-                InserValuesIntoPanel();
+                var netmap = Shell.InvokeCustomRequest("b4877dc5-a5b5-4b7e-b08b-1b1995e8c8d8", "type.gethostswithgroups").GetProviding<string>().Replace("localhost", GetIp()).Replace("127.0.0.1", GetIp()).Split(',', StringSplitOptions.RemoveEmptyEntries);
+                var objects = GroupObject.FromMapping(netmap, Result);
+                foreach (var obj in objects)
+                    uiStackPanel.Children.Add(obj.Expander);
             });
         }
 
@@ -222,73 +225,6 @@ namespace tview.nmap.shellv1
 
             }
             return result;
-        }
-
-        private void InserValuesIntoPanel()
-        {
-            var dictionary = new Dictionary<string, string>();
-            var groups = new List<string>();
-            var hostsGroups = Shell.InvokeCustomRequest("b4877dc5-a5b5-4b7e-b08b-1b1995e8c8d8", "type.gethostswithgroups").GetProviding<string>().Replace("localhost", GetIp()).Replace("127.0.0.1", GetIp());
-            var hostsValues = hostsGroups.Split(',', StringSplitOptions.RemoveEmptyEntries);
-            foreach (var hostwithgroup in hostsValues)
-            {
-                var host = hostwithgroup.Split(":")[0];
-                var groupname = hostwithgroup.Split(":")[1];
-                dictionary.Add(host, groupname);
-                if(!groups.Contains(groupname))
-                    groups.Add(groupname);
-            }
-
-            var defaultExpander = GetExpander("Без группы");
-            var defaultStackPanel = new StackPanel();
-            bool addOthers = false;
-
-            foreach (var group in groups)
-            {
-                var expander = GetExpander($"Группа хостов '{group}'");
-                var stackPanel = new StackPanel();
-                foreach (var host in Result.Hosts)
-                {
-                    if (dictionary.ContainsKey(host.Address.IP) && dictionary[host.Address.IP] == group)
-                    {
-                        stackPanel.Children.Add(new NmapControl(host)
-                        {
-                            Margin = new Thickness(5, 5, 5, 0)
-                        });
-                    }
-                    else
-                    {
-                        defaultStackPanel.Children.Add(new NmapControl(host)
-                        {
-                            Margin = new Thickness(5, 5, 5, 0)
-                        });
-                        addOthers = true;
-                    }
-                }
-                expander.Content = stackPanel;
-                uiStackPanel.Children.Add(expander);
-            }
-
-            if(addOthers)
-            {
-                defaultExpander.Content = defaultStackPanel;
-                uiStackPanel.Children.Add(defaultExpander);
-            }
-        }
-
-        private Expander GetExpander(string headerText)
-        {
-            var header = new TextBlock
-            {
-                Foreground = "#1f1f1f".GetBrush(),
-                FontFamily = new FontFamily("Arial"),
-                Text = headerText,
-            };
-            var expander = new Expander
-            {
-                Header = header,
-            };
-            return expander;
         }
 
         private void uiCloseTab_Click(object sender, RoutedEventArgs e)

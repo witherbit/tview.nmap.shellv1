@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using wcheck.wcontrols;
 
 namespace tview.nmap.shellv1.Controls
 {
@@ -30,7 +31,10 @@ namespace tview.nmap.shellv1.Controls
             {
                 foreach(var port in portItem.Port)
                 {
-                    uiTextPorts.Text += $"{port.PortID} : {port.State.StateProperty}\r\n";
+                    var service = "unknown";
+                    if(port.Service != null && port.Service.Name != null)
+                        service = port.Service.Name;
+                    uiTextPorts.Text += $"{port.PortID}\t:\t{port.State.StateProperty}\t[{service}]\r\n";
                 }
             }
             if (!string.IsNullOrEmpty(uiTextPorts.Text))
@@ -48,6 +52,16 @@ namespace tview.nmap.shellv1.Controls
                 uiTextSysInfo.Text = uiTextSysInfo.Text.Remove(uiTextSysInfo.Text.Length - 2);
             else
                 uiTextSysInfo.Text = "Операционные системы не обнаружены";
+        }
+        public NmapControl(string downTarget)
+        {
+            InitializeComponent();
+            uiTextIp.Text = downTarget;
+            uiTextPorts.Text = "Открытые порты не обнаружены";
+            uiTextSysInfo.Text = "Операционные системы не обнаружены";
+            uiBorderUp.Background = "#ff9999".GetBrush();
+            uiBorderOs.Visibility = Visibility.Collapsed;
+            uiBorderPorts.Visibility = Visibility.Collapsed;
         }
     }
 }

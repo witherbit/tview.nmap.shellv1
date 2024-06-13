@@ -14,38 +14,46 @@
         </Grid.ColumnDefinitions>
         <Border Margin="5 5 0 5"
                 VerticalAlignment="Top"
-                Background="#ffdcb8" CornerRadius="5">
-            <TextBlock FontFamily="Arial Black" 
+                Background="#aaff9a" CornerRadius="5" x:Name="uiBorderUp">
+            <TextBlock FontFamily="Arial" 
                        Text="xxx.xxx.xxx.xxx" 
                        VerticalAlignment="Center"
                        HorizontalAlignment="Center"
                        Margin="5"
                        Name="uiTextIp"
-                       FontSize="14"
+                       FontSize="12"
                        TextAlignment="Justify"/>
         </Border>
         <Border Grid.Column="1" Margin="5"
-                VerticalAlignment="Top"
-                Background="#dfdfdf" CornerRadius="5">
-            <TextBlock FontFamily="Arial" 
-                       Text="" 
-                       VerticalAlignment="Top"
-                       HorizontalAlignment="Left"
-                       Margin="5"
-                       Name="uiTextPorts" TextWrapping="WrapWithOverflow" FontSize="14"
-                       TextAlignment="Justify"/>
+                Background="#dfdfdf" CornerRadius="5" x:Name="uiBorderPorts">
+            <Expander>
+                <Expander.Header>
+                    <TextBlock Text="Порты" FontFamily="Arial" Foreground="#1f1f1f"/>
+                </Expander.Header>
+                <TextBlock FontFamily="Arial" 
+           Text="" 
+           VerticalAlignment="Top"
+           HorizontalAlignment="Left"
+           Margin="5"
+           Name="uiTextPorts" TextWrapping="WrapWithOverflow" FontSize="12"
+           TextAlignment="Left"/>
+            </Expander>
         </Border>
         <Border Grid.Column="2" Margin="0 5 5 5"
-                VerticalAlignment="Top"
-        Background="#dfdfdf" CornerRadius="5">
-            <TextBlock FontFamily="Arial" 
-               Text="" 
-               VerticalAlignment="Top"
-               HorizontalAlignment="Left"
-               Margin="5"
-               Name="uiTextSysInfo" TextWrapping="WrapWithOverflow"
-               FontSize="14"
-                       TextAlignment="Justify"/>
+        Background="#dfdfdf" CornerRadius="5" x:Name="uiBorderOs">
+            <Expander>
+                <Expander.Header>
+                    <TextBlock Text="Данные об операционной системе" FontFamily="Arial" Foreground="#1f1f1f"/>
+                </Expander.Header>
+                <TextBlock FontFamily="Arial" 
+   Text="" 
+   VerticalAlignment="Top"
+   HorizontalAlignment="Left"
+   Margin="5"
+   Name="uiTextSysInfo" TextWrapping="WrapWithOverflow"
+   FontSize="12"
+           TextAlignment="Left"/>
+            </Expander>
         </Border>
     </Grid>
 </UserControl>
