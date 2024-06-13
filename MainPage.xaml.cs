@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using NMap.Scanner;
 using NMap.Schema;
+using NMap.Schema.Enums;
 using NMap.Schema.Models;
 using pwither.thrd.Locker;
 using System;
@@ -52,6 +53,10 @@ namespace tview.nmap.shellv1
 
         public void StartTask(string hosts, string gatewayIp, string subnetMask)
         {
+            Processor.OutputRedirect = Shell.GetEventRedirect();
+
+            Processor.OutputRedirect.InvokeEventAsync("state", "Запуск задания [1/7]");
+
             var myIp = GetIp();
             hosts = hosts.Replace("localhost", myIp).Replace("127.0.0.1", myIp);
             Processor.HostsSelected = hosts;
@@ -60,13 +65,23 @@ namespace tview.nmap.shellv1
             this.Invoke(() =>
             {
                 uiCircleWait.Fill = _inComplete;
+
                 uiCircleInit.Fill = _inProgress;
             });
-            
 
-            
-            Processor.TcpEV.StartInfo += (info => Log(new LogContent($"Start nmap.exe with {info.Arguments} [TCP]", Processor)));
-            Processor.HostEV.StartInfo += (info => Log(new LogContent($"Start nmap.exe with {info.Arguments} [HOSTS DISCOVER]", Processor)));
+            Processor.OutputRedirect.InvokeEventAsync("state", "Инициализация Nmap API [2/7]");
+
+            Processor.TcpEV.StartInfo += (info => 
+            { 
+                Log(new LogContent($"Start nmap.exe with {info.Arguments} [TCP]", Processor));
+                Processor.OutputRedirect.InvokeEventAsync("output", $"Start nmap.exe for port scan task", Processor);
+
+            });
+            Processor.HostEV.StartInfo += (info =>
+            {
+                Log(new LogContent($"Start nmap.exe with {info.Arguments} [HOSTS DISCOVER]", Processor));
+                Processor.OutputRedirect.InvokeEventAsync("output", $"Start nmap.exe for hosts discover task", Processor);
+            });
 
             Processor.TcpEV.Output += OnOutputTcp;
             Processor.HostEV.Output += OnOutputHost;
@@ -88,7 +103,8 @@ namespace tview.nmap.shellv1
                 uiCircleInit.Fill = _inComplete;
                 uiCircleSearch.Fill = _inProgress;
             });
-            
+
+            Processor.OutputRedirect.InvokeEventAsync("state", "Поиск активных хостов [3/7]");
 
             Processor.DiscoverHostsAsync(gatewayIp, subnetMask);
         }
@@ -101,6 +117,7 @@ namespace tview.nmap.shellv1
             if (output == null) return;
             this.Invoke(()=>uiTextCaption.Text = output);
             Log(new LogContent($"[HOSTS DISCOVER]: {output}", Processor));
+            Processor.OutputRedirect.InvokeEventAsync("output", output);
             if (output.Contains("Initiating SYN Stealth Scan") && !break1)
             {
                 break1 = true;
@@ -109,6 +126,8 @@ namespace tview.nmap.shellv1
                     uiCircleSearch.Fill = _inComplete;
                     uiCircleScanDefault.Fill = _inProgress;
                 });
+
+                Processor.OutputRedirect.InvokeEventAsync("state", "Распределение списков [4/7]");
             }
             else if (output.Contains("Initiating OS detection") && !break2)
             {
@@ -118,6 +137,7 @@ namespace tview.nmap.shellv1
                     uiCircleScanDefault.Fill = _inComplete;
                     uiCircleGetOS.Fill = _inProgress;
                 });
+                Processor.OutputRedirect.InvokeEventAsync("state", "Получение информации об ОС [5/7]");
             }
         }
 
@@ -133,6 +153,7 @@ namespace tview.nmap.shellv1
                 uiCircleScan.Fill = _inComplete;
                 uiCircleStop.Fill = _inProgress;
             });
+            Processor.OutputRedirect.InvokeEventAsync("state", "Завершение работы Nmap [7/7]");
             ShowResults();
         }
 
@@ -141,6 +162,7 @@ namespace tview.nmap.shellv1
             if (output == null) return;
             this.Invoke(() => uiTextCaption.Text = output);
             Log(new LogContent($"[TCP]: {output}", Processor));
+            Processor.OutputRedirect.InvokeEventAsync("output", output);
         }
 
         private void OnHostDiscovery(IEnumerable<Host> hosts)
@@ -150,6 +172,9 @@ namespace tview.nmap.shellv1
                 uiCircleGetOS.Fill = _inComplete;
                 uiCircleScan.Fill = _inProgress;
             });
+
+            Processor.OutputRedirect.InvokeEventAsync("state", "Сканирование портов [6/7]");
+
             Hosts = hosts.ToArray();
             var hostsTargets = new List<string>();
             foreach (Host host in hosts)
@@ -176,6 +201,8 @@ namespace tview.nmap.shellv1
                 var objects = GroupObject.FromMapping(netmap, Result);
                 foreach (var obj in objects)
                     uiStackPanel.Children.Add(obj.Expander);
+                Processor.OutputRedirect.InvokeEventAsync("state", "Выполнено");
+                Processor.OutputRedirect.InvokeEventAsync("complete", new NmapStatisticTemplate());
             });
         }
 

@@ -22,6 +22,7 @@
                        Margin="5"
                        Name="uiTextIp"
                        FontSize="12"
+                       Foreground="#1f1f1f"
                        TextAlignment="Justify"/>
         </Border>
         <Border Grid.Column="1" Margin="5"
@@ -30,13 +31,14 @@
                 <Expander.Header>
                     <TextBlock Text="Порты" FontFamily="Arial" Foreground="#1f1f1f"/>
                 </Expander.Header>
-                <TextBlock FontFamily="Arial" 
+                <TextBlock FontFamily="Cascadia Code" 
            Text="" 
            VerticalAlignment="Top"
            HorizontalAlignment="Left"
            Margin="5"
            Name="uiTextPorts" TextWrapping="WrapWithOverflow" FontSize="12"
-           TextAlignment="Left"/>
+           TextAlignment="Left"
+                           Foreground="#1f1f1f"/>
             </Expander>
         </Border>
         <Border Grid.Column="2" Margin="0 5 5 5"
@@ -52,7 +54,8 @@
    Margin="5"
    Name="uiTextSysInfo" TextWrapping="WrapWithOverflow"
    FontSize="12"
-           TextAlignment="Left"/>
+           TextAlignment="Left"
+                           Foreground="#1f1f1f"/>
             </Expander>
         </Border>
     </Grid>

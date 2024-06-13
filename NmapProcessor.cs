@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using tview.nmap.shellv1.Enums;
 using tview.nmap.shellv1.Nmap;
 using tview.nmap.shellv1.Scripts;
+using wshell.Objects;
 
 namespace tview.nmap.shellv1
 {
@@ -22,6 +23,8 @@ namespace tview.nmap.shellv1
 
         public ContextEV TcpEV { get; private set; }
         public ContextEV HostEV { get; private set; }
+
+        public EventRedirect OutputRedirect { get; internal set; }
 
         private string _exePath;
 
