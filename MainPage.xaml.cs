@@ -73,13 +73,13 @@ namespace tview.nmap.shellv1
 
             Processor.TcpEV.StartInfo += (info => 
             { 
-                Log(new LogContent($"Start nmap.exe with {info.Arguments} [TCP]", Processor));
+                //Log(new LogContent($"Start nmap.exe with {info.Arguments} [TCP]", Processor));
                 Processor.OutputRedirect.InvokeEventAsync("output", $"Start nmap.exe for port scan task", Processor);
 
             });
             Processor.HostEV.StartInfo += (info =>
             {
-                Log(new LogContent($"Start nmap.exe with {info.Arguments} [HOSTS DISCOVER]", Processor));
+                //Log(new LogContent($"Start nmap.exe with {info.Arguments} [HOSTS DISCOVER]", Processor));
                 Processor.OutputRedirect.InvokeEventAsync("output", $"Start nmap.exe for hosts discover task", Processor);
             });
 
@@ -116,7 +116,7 @@ namespace tview.nmap.shellv1
         {
             if (output == null) return;
             this.Invoke(()=>uiTextCaption.Text = output);
-            Log(new LogContent($"[HOSTS DISCOVER]: {output}", Processor));
+            //Log(new LogContent($"[HOSTS DISCOVER]: {output}", Processor));
             Processor.OutputRedirect.InvokeEventAsync("output", output);
             if (output.Contains("Initiating SYN Stealth Scan") && !break1)
             {
@@ -161,7 +161,7 @@ namespace tview.nmap.shellv1
         {
             if (output == null) return;
             this.Invoke(() => uiTextCaption.Text = output);
-            Log(new LogContent($"[TCP]: {output}", Processor));
+            //Log(new LogContent($"[TCP]: {output}", Processor));
             Processor.OutputRedirect.InvokeEventAsync("output", output);
         }
 
