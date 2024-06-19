@@ -13,7 +13,7 @@ using wcheck.wcontrols;
 
 namespace tview.nmap.shellv1.Objects
 {
-    internal sealed class GroupObject
+    public sealed class GroupObject
     {
         public string TargetGroup { get; set; }
         public List<HostObject> HostObjects { get; }

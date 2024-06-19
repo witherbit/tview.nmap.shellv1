@@ -202,7 +202,7 @@ namespace tview.nmap.shellv1
                 foreach (var obj in objects)
                     uiStackPanel.Children.Add(obj.Expander);
                 Processor.OutputRedirect.InvokeEventAsync("state", "Выполнено");
-                Processor.OutputRedirect.InvokeEventAsync("complete", new NmapStatisticTemplate());
+                Processor.OutputRedirect.InvokeEventAsync("complete", new NmapStatisticTemplate(objects));
             });
         }
 

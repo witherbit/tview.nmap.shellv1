@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace tview.nmap.shellv1.Objects
 {
-    internal sealed class HostObject
+    public sealed class HostObject
     {
         public Host Source { get; set; }
         public string TargetIp {  get; set; }
