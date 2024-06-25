@@ -216,42 +216,49 @@ namespace tview.nmap.shellv1
 
         private static string GetIp()
         {
-            string result = "?";
-            foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
+            try
             {
-
-                var defGate = from nics in NetworkInterface.GetAllNetworkInterfaces()
-
-
-                              from props in nics.GetIPProperties().GatewayAddresses
-                              where nics.OperationalStatus == OperationalStatus.Up
-                              select props.Address.ToString(); // this sets the default gateway in a variable
-
-                GatewayIPAddressInformationCollection prop = ni.GetIPProperties().GatewayAddresses;
-
-                if (defGate.First() != null)
+                string result = "?";
+                foreach (NetworkInterface ni in NetworkInterface.GetAllNetworkInterfaces())
                 {
 
-                    IPInterfaceProperties ipProps = ni.GetIPProperties();
+                    var defGate = from nics in NetworkInterface.GetAllNetworkInterfaces()
 
-                    foreach (UnicastIPAddressInformation addr in ipProps.UnicastAddresses)
+
+                                  from props in nics.GetIPProperties().GatewayAddresses
+                                  where nics.OperationalStatus == OperationalStatus.Up
+                                  select props.Address.ToString(); // this sets the default gateway in a variable
+
+                    GatewayIPAddressInformationCollection prop = ni.GetIPProperties().GatewayAddresses;
+
+                    if (defGate.First() != null)
                     {
 
-                        if (addr.Address.ToString().Contains(defGate.First().Remove(defGate.First().LastIndexOf(".")))) // The IP address of the computer is always a bit equal to the default gateway except for the last group of numbers. This splits it and checks if the ip without the last group matches the default gateway
+                        IPInterfaceProperties ipProps = ni.GetIPProperties();
+
+                        foreach (UnicastIPAddressInformation addr in ipProps.UnicastAddresses)
                         {
 
-                            if (result == "?") // check if the string has been changed before
+                            if (addr.Address.ToString().Contains(defGate.First().Remove(defGate.First().LastIndexOf(".")))) // The IP address of the computer is always a bit equal to the default gateway except for the last group of numbers. This splits it and checks if the ip without the last group matches the default gateway
                             {
-                                result = addr.Address.ToString(); // put the ip address in a string that you can use.
+
+                                if (result == "?") // check if the string has been changed before
+                                {
+                                    result = addr.Address.ToString(); // put the ip address in a string that you can use.
+                                }
                             }
+
                         }
 
                     }
 
                 }
-
+                return result;
             }
-            return result;
+            catch
+            {
+                return "Недоступен";
+            }
         }
 
         private void uiCloseTab_Click(object sender, RoutedEventArgs e)
